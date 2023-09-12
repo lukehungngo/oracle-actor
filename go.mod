@@ -1,6 +1,6 @@
 module oracle-actor
 
-go 1.21.1
+go 1.20.1
 
 require (
 	github.com/anthdm/hollywood v0.0.0-20230830092425-72c772290525 // indirect
