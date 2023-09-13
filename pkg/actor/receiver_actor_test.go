@@ -1,21 +1,29 @@
 package actor
 
-import "testing"
+import (
+	"encoding/json"
+	"fmt"
+	"oracle-actor/config"
+	"oracle-actor/pkg/client"
+	"oracle-actor/pkg/generated/contracts/optimistic_oracle"
+	"testing"
+)
 
 func TestOracleEventReceivedActor_Receive(t *testing.T) {
-	type args struct {
-		ctx *actor.Context
+	clientProvider := client.EthClient(config.LocalRPCWS)
+	txOpts, err := client.CreateTransactor(1200000)
+	if err != nil {
+		t.Fatal(err)
 	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
+	contractAddress, txs, oracle, err := optimistic_oracle.DeployOptimisticOracle(txOpts, clientProvider)
+	if err != nil {
+		t.Fatal(err)
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			f := &OracleEventReceivedActor{}
-			f.Receive(tt.args.ctx)
-		})
-	}
+	fmt.Println("contractAddress:", contractAddress)
+	dataTxs, _ := json.MarshalIndent(txs, "", " ")
+	fmt.Println("txs:", string(dataTxs))
+
+	dataOracle, _ := json.MarshalIndent(*oracle, "", " ")
+	fmt.Println("dataOracle:", string(dataOracle))
+
 }
