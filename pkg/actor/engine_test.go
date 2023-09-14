@@ -6,7 +6,9 @@ import (
 	"oracle-actor/config"
 	"oracle-actor/pkg/client"
 	"oracle-actor/pkg/generated/contracts/optimistic_oracle"
+	"sync"
 	"testing"
+	"time"
 )
 
 func TestOracleEventReceivedActor_Receive(t *testing.T) {
@@ -25,5 +27,34 @@ func TestOracleEventReceivedActor_Receive(t *testing.T) {
 
 	dataOracle, _ := json.MarshalIndent(*oracle, "", " ")
 	fmt.Println("dataOracle:", string(dataOracle))
+}
 
+func TestEventStream(t *testing.T) {
+	e := NewEngine()
+	wg := new(sync.WaitGroup)
+	eventSub := e.EventStream.Subscribe(func(event any) {
+		fmt.Println("received event", event)
+	})
+
+	eventSub2 := e.EventStream.Subscribe(func(event any) {
+		fmt.Println("received event2", event)
+	})
+	go func() {
+		wg.Add(1)
+		e.EventStream.Publish("this is a message")
+		wg.Done()
+	}()
+
+	go func() {
+		wg.Add(1)
+		e.EventStream.Publish("this is a second message")
+		wg.Done()
+	}()
+
+	time.Sleep(2 * time.Second)
+	wg.Wait()
+
+	// Cleanup subscription
+	defer e.EventStream.Unsubscribe(eventSub)
+	defer e.EventStream.Unsubscribe(eventSub2)
 }

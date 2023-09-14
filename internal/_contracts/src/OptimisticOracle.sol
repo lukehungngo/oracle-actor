@@ -75,7 +75,8 @@ contract OptimisticOracle is Ownable {
 
     mapping(uint256 => uint256) internal _tdsContractDefaultReportId; // tdsContractId => reportId of first submission result that confirm default
 
-    constructor() Ownable(msg.sender){}
+    constructor() Ownable(msg.sender) {}
+
     /// -----------------------------------------------------------------------
     /// Modifier
     /// -----------------------------------------------------------------------
@@ -84,7 +85,7 @@ contract OptimisticOracle is Ownable {
         if (_tdsContractReport[tdsContractId].length > 0) {
             uint256 lastReport = _tdsContractReport[tdsContractId][
                 _tdsContractReport[tdsContractId].length - 1
-                ];
+            ];
             if (_resultManager[lastReport].isDefault)
                 revert TDSContractIsDefault();
             if (
@@ -157,8 +158,8 @@ contract OptimisticOracle is Ownable {
         });
 
         emit ReportCreated(
-            reportId,
             tdsContractId,
+            reportId,
             startTime,
             referenceEvent,
             triggerType,

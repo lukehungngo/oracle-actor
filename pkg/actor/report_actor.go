@@ -5,17 +5,23 @@ import (
 	"fmt"
 	"github.com/anthdm/hollywood/actor"
 	"oracle-actor/pkg/generated/contracts/optimistic_oracle"
+	"time"
 )
 
-type OracleEventReceivedActor struct {
+type OracleReportCreatedActor struct {
 }
 
-func (f *OracleEventReceivedActor) Receive(ctx *actor.Context) {
+func NewOracleReportCreatedActor() actor.Receiver {
+	return &OracleReportCreatedActor{}
+}
+
+func (f *OracleReportCreatedActor) Receive(ctx *actor.Context) {
 	switch msg := ctx.Message().(type) {
 	case actor.Started:
-		fmt.Println("OracleEventReceivedActor has started")
+		fmt.Printf("OracleEventReceivedActor has started")
 	case *optimistic_oracle.OptimisticOracleReportCreated:
 		data, _ := json.MarshalIndent(msg, "", " ")
 		fmt.Println("OracleEventReceivedActor has received", string(data))
+		time.Sleep(3 * time.Second)
 	}
 }
